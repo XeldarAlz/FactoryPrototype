@@ -6,9 +6,11 @@ public class CurrencyManager : MonoBehaviour
     public static CurrencyManager Instance;
     private const string CurrencyKey = "Currency";
 
+    [SerializeField] private int _startingCurrency = 400;
+
     private int _currentCurrency
     {
-       get => PlayerPrefs.GetInt(CurrencyKey, 400);
+       get => PlayerPrefs.GetInt(CurrencyKey, _startingCurrency);
        set => PlayerPrefs.SetInt(CurrencyKey, value);
     }
     public int GetCurrency() => _currentCurrency;
