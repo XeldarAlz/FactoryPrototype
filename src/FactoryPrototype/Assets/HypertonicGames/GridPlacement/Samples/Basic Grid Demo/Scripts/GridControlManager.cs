@@ -44,14 +44,23 @@ namespace Hypertonic.GridPlacement.Example.BasicDemo
             ExampleGridObject.OnObjectSelected -= HandleExampleGridObjectSelected;
         }
 
+        // TODO: Mantik iyilestirmesi yapilabilir.
         private void HandleConfirmButtonPressed()
         {
             bool placed = GridManagerAccessor.GridManager.ConfirmPlacement();
 
+            PlaceableItem placeableItem = _selectedGridObject.GetComponent<PlaceableItem>();
+            
             if (placed)
             {
+                if (!placeableItem.IsPlaced)
+                {
+                    CurrencyManager.Instance.DecreaseCurrency(placeableItem.Value);
+                }
+                
                 OnObjectPlacedOnGrid?.Invoke();
                 _selectedGridObject = null;
+                placeableItem.IsPlaced = true;
             }
         }
 

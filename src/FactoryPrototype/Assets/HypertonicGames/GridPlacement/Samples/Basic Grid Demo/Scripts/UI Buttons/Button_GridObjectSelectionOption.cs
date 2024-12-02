@@ -1,3 +1,5 @@
+using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,9 +8,30 @@ namespace Hypertonic.GridPlacement.Example.BasicDemo
     [RequireComponent(typeof(Button))]
     public class Button_GridObjectSelectionOption : MonoBehaviour
     {
+        [SerializeField] private TextMeshProUGUI _priceText;
         public static event System.Action<GameObject> OnOptionSelected;
 
         [SerializeField] private GameObject _gridObjectToSpawnPrefab;
+
+        private Button _button;
+        private PlaceableItem _placeableItem;
+
+        private void Awake()
+        {
+            _button = GetComponent<Button>();
+            _placeableItem = _gridObjectToSpawnPrefab.GetComponent<PlaceableItem>();
+        }
+
+        private void OnEnable()
+        {
+            CurrencyManager.Instance.OnCurrencyChanged += OnCurrencyChanged;
+            UpdateButtonInteractable();
+        }
+
+        private void OnDisable()
+        {
+            CurrencyManager.Instance.OnCurrencyChanged -= OnCurrencyChanged;
+        }
 
         private void Start()
         {
@@ -18,6 +41,9 @@ namespace Hypertonic.GridPlacement.Example.BasicDemo
             {
                 button.onClick.AddListener(HandleButtonClicked);
             }
+
+            // Objenin degerini yazdir
+            _priceText.text = $"{_placeableItem.Value}$";
         }
 
         private void HandleButtonClicked()
@@ -39,6 +65,16 @@ namespace Hypertonic.GridPlacement.Example.BasicDemo
             OnOptionSelected?.Invoke(objectToPlace);
 
             GridManagerAccessor.GridManager.EnterPlacementMode(objectToPlace);
+        }
+        
+        private void OnCurrencyChanged()
+        {
+            UpdateButtonInteractable();
+        }
+
+        private void UpdateButtonInteractable()
+        {
+            _button.interactable = CurrencyManager.Instance.CanBuy(_placeableItem.Value);
         }
     }
 }
